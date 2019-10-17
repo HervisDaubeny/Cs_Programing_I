@@ -1,0 +1,11 @@
+D:\Programing\Cs_Programming_I\01\word_occurances\word_occurances\bin\Debug\netcoreapp3.0\word_occurances.exe
+D:\Programing\Cs_Programming_I\01\word_occurances\word_occurances\bin\Debug\netcoreapp3.0\word_occurances.deps.json
+D:\Programing\Cs_Programming_I\01\word_occurances\word_occurances\bin\Debug\netcoreapp3.0\word_occurances.runtimeconfig.json
+D:\Programing\Cs_Programming_I\01\word_occurances\word_occurances\bin\Debug\netcoreapp3.0\word_occurances.runtimeconfig.dev.json
+D:\Programing\Cs_Programming_I\01\word_occurances\word_occurances\bin\Debug\netcoreapp3.0\word_occurances.dll
+D:\Programing\Cs_Programming_I\01\word_occurances\word_occurances\bin\Debug\netcoreapp3.0\word_occurances.pdb
+D:\Programing\Cs_Programming_I\01\word_occurances\word_occurances\obj\Debug\netcoreapp3.0\word_occurances.csprojAssemblyReference.cache
+D:\Programing\Cs_Programming_I\01\word_occurances\word_occurances\obj\Debug\netcoreapp3.0\word_occurances.AssemblyInfoInputs.cache
+D:\Programing\Cs_Programming_I\01\word_occurances\word_occurances\obj\Debug\netcoreapp3.0\word_occurances.AssemblyInfo.cs
+D:\Programing\Cs_Programming_I\01\word_occurances\word_occurances\obj\Debug\netcoreapp3.0\word_occurances.dll
+D:\Programing\Cs_Programming_I\01\word_occurances\word_occurances\obj\Debug\netcoreapp3.0\word_occurances.pdb

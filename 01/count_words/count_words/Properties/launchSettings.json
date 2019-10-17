@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "count_words": {
+      "commandName": "Project",
+      "commandLineArgs": "D:\\Programing\\Cs_Programming_I\\01\\input_files\\word_occurances_input.txt"
+    }
+  }
+}

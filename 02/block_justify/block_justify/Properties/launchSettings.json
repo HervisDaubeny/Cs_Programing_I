@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "block_justify": {
+      "commandName": "Project",
+      "commandLineArgs": "D:\\Programing\\Cs_Programming_I\\input_files\\word_occurances_input.txt D:\\Programing\\Cs_Programming_I\\input_files\\out.txt 17"
+    }
+  }
+}

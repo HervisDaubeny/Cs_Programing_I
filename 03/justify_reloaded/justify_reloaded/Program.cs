@@ -11,7 +11,14 @@ namespace justify_reloaded
     {
         static void Main(string[] args) {
 
-
+            /* TODO
+             * 
+             * for output create these methods
+             * PrintFormatedLine() #print line with special ' ' padding
+             * PrintLine() #print line without any indentation
+             * PrintEmptyLine() #indents block; then it is neccesary to set myWordReader.TrimState = default instead of EOL
+             * 
+             */
         }
     }
 
@@ -38,6 +45,11 @@ namespace justify_reloaded
         /// 
         /// </summary>
         private FillBufferState fillBufferState = FillBufferState.Default;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private GetWordState getWordState = GetWordState.Default;
 
         /// <summary>
         /// 
@@ -71,6 +83,7 @@ namespace justify_reloaded
 
             //might want to change to return data type / dont yet know which
             int count = 0;
+            Buffer = new char[ BufferSize ];
 
             count = this.textReader.ReadBlock(this.Buffer, 0, BufferSize);
 
@@ -84,23 +97,45 @@ namespace justify_reloaded
             this.fillBufferState = FillBufferState.IN;
 
         }
-        public void GetWord() {
+        public string GetWord() {
 
-            //when do I need to FillBuffer() during GetWord()
             int index = this.BufferIndex;
             char[] whites = new char[] { ' ', '\n', '\t' };
+            GetWordState state = GetWordState.Default;
             StringBuilder word = new StringBuilder();
 
-            for ( ; index < BufferSize; index++) {
+            while (true) {
 
-                if (whites.Contains(this.Buffer[index])) {
+                //Check index out of range.
+                if (index >= BufferSize) {
 
-                    Trim();
-                    index = this.BufferIndex;
-
-                    v
+                    FillBuffer();
+                    index = 0;
                 }
+
+                //End reading on whitespace.
+                if (whites.Contains(this.Buffer[ index ])) {
+
+                    state = GetWordState.EOW;
+                    break;
+                }
+
+                //End reading on EOF.
+                if (this.Buffer[ index ] == '\0') {
+
+                    state = GetWordState.EOF;
+                    break;
+                }
+
+                //valid character read
+                word.Append(this.Buffer[ index ]);
+                index++;
             }
+
+            this.getWordState = state;
+            this.BufferIndex = index;
+
+            return word.ToString();
         }
 
         /// <summary>
@@ -114,8 +149,14 @@ namespace justify_reloaded
             char[] regularWhite = new char[] { ' ', '\t' };
             TrimState state = TrimState.Default;
 
-            // when do I need to FillBuffer in Trim()?
-            for ( ; index < BufferSize; index++) {
+            while ( true ) {
+
+                //check index out of range
+                if (index >= BufferSize && state != TrimState.EOF) {
+
+                    FillBuffer();
+                    index = 0;
+                }
 
                 //check for ' ', '\n', '\t', '\0'
                 if (regularWhite.Contains(Buffer[index])) {
@@ -157,8 +198,15 @@ namespace justify_reloaded
         private enum TrimState { IN, EOL, EOF, Default };
 
         /// <summary>
-        /// IN = FillBuffer read 1024 chars; EOB = FillBuffer read < 1024 chars;
+        /// IN = FillBuffer read 1024 chars;
+        /// EOB = FillBuffer read < 1024 chars;
         /// </summary>
         private enum FillBufferState { IN, EOB, Default };
+
+        /// <summary>
+        /// EOW = "end of word" = White space was red;
+        /// EOF = "end of file" = '\0' read
+        /// </summary>
+        private enum GetWordState { EOW, EOF, Default };
     }
 }

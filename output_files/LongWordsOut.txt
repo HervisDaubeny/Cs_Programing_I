@@ -1,0 +1,10 @@
+aksnccoasn
+coanscoasncoasncoiasnscoasncoiasnscioasncoiancoanscoiancoianscoinasconasoicnaoscnoaicnoaisncoaisncoi
+
+ascnoaiscno              iascn
+System.IO.FileNotFoundException:
+not          find         file
+'D:\MFF\ZS_2019\c#_repos\MultiFileBlockOfText\MultyFileTests\bin\Debug\netcoreapp3.0\Outs\LoremIpsum_Aligned.out'.
+Trace:
+
+oiascnasasaddassadiocnsahgasjhgasjhasvjhasvdjdjhasbjhadvsjvdsasdasdadsadsads

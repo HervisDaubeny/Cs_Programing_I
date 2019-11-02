@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 
 namespace justify_reloaded
 {
-    class Program
+    public static class Program
     {
-        static void Main(string[] args) {
+
+        public static void Main(string[] args) {
+
 
             /* TODO
              * 
@@ -19,6 +21,181 @@ namespace justify_reloaded
              * PrintEmptyLine() #indents block; then it is neccesary to set myWordReader.TrimState = default instead of EOL
              * 
              */
+            int size = 0;
+            bool endOfFile = false;
+
+            //object 
+            MyWordReader myWordReader;
+            MyWordWriter myWordWriter;
+
+            //arg check
+            //in file
+            try {
+
+                myWordReader = new MyWordReader(File.OpenText(args[ 0 ]));
+            }
+            catch (Exception e) {
+
+                Console.WriteLine("File Error");
+
+                return;
+            }
+
+            //line length
+            if(args.Length < 3 || args.Length > 3) {
+
+                Console.WriteLine("Argument Error");
+
+                return;
+            }
+            else {
+
+                bool result = int.TryParse(args[ 2 ], out size);
+
+                if (!result) {
+
+                    Console.WriteLine("Argument Error");
+
+                    return;
+                }
+
+                if (size < 1) {
+
+                    Console.WriteLine("Argument Error");
+
+                    return;
+                }
+            }
+
+            //outfile
+            try {
+
+                myWordWriter = new MyWordWriter(File.CreateText(args[ 1 ]), size);
+            }
+            catch (Exception e) {
+
+                Console.WriteLine("File Error");
+
+                return;
+            }
+
+            //try run
+            List<string> words = new List<string>();
+            int currentLength = 0;
+
+            while (true) {
+
+
+                string newWord = "";
+                bool wordRemains = false;
+
+                newWord =  myWordReader.GetWord();
+                myWordReader.Trim();
+
+                if (currentLength + newWord.Length + words.Count <= size) {
+
+                    words.Add(newWord);
+                    currentLength += newWord.Length;
+                }
+                else {
+                    wordRemains = true;
+
+                    // print too long or single word
+                    if (words.Count < 2 && myWordReader.trimState == MyWordReader.TrimState.Default) {
+
+                        myWordWriter.PrintNormalLine(words);
+
+                        words.Clear();
+                        currentLength = 0;
+                    }
+                    else if (words.Count > 1 && !(myWordReader.trimState == MyWordReader.TrimState.EOF /*|| myWordReader.trimState == MyWordReader.TrimState.EOLF*/ || myWordReader.getWordState == MyWordReader.GetWordState.EOF)) {
+
+                        myWordWriter.PrintFormatedLine(words, currentLength);
+
+                        words.Clear();
+
+                        words.Add(newWord);
+                        currentLength = newWord.Length;
+                    }
+                }
+                
+                // print on the end of block
+                if (myWordReader.trimState == MyWordReader.TrimState.EOL) {
+
+                    if (wordRemains && words.Count > 1) {
+
+                        myWordWriter.PrintFormatedLine(words, currentLength);
+
+                        words.Clear();
+
+                        words.Add(newWord);
+                        currentLength = newWord.Length;
+                    }
+                    else if (wordRemains && words.Count < 2) {
+
+                        myWordWriter.PrintNormalLine(words);
+
+                        words.Clear();
+
+                        words.Add(newWord);
+                        currentLength = newWord.Length;
+                    }
+                    myWordWriter.PrintNormalLine(words);
+                    myWordWriter.PrintEmptyLine();
+
+                    words.Clear();
+                    currentLength = 0;
+                    myWordReader.ResetTrimState();
+                }
+                
+                //end of file detection
+                if (myWordReader.trimState == MyWordReader.TrimState.EOF/* || myWordReader.trimState == MyWordReader.TrimState.EOLF*/) {
+
+                    endOfFile = true;
+                }
+
+                if (myWordReader.getWordState == MyWordReader.GetWordState.EOF) {
+
+                    endOfFile = true;
+                }
+
+                //print on end of file
+                if (endOfFile) {
+
+                    if (wordRemains) {
+
+                        if (words.Count > 1) {
+
+                            myWordWriter.PrintFormatedLine(words, currentLength);
+                        }
+                        else {
+
+                            if (currentLength > 0) {
+
+                                myWordWriter.PrintNormalLine(words);
+                            }
+                        }
+
+                        words.Clear();
+
+                        words.Add(newWord);
+                        currentLength = newWord.Length;
+                    }
+                    if (currentLength > 0) {
+
+                        myWordWriter.PrintNormalLine(words);
+                    }
+
+                    words.Clear();
+                    currentLength = 0;
+
+                    myWordWriter.Flush();
+                    break;
+                }
+            }
+
+            //Console.ReadKey();
+            //return;
         }
     }
 
@@ -39,17 +216,17 @@ namespace justify_reloaded
         /// <summary>
         /// 
         /// </summary>
-        private TrimState trimState = TrimState.Default;
+        public TrimState trimState { get; private set; }
 
         /// <summary>
         /// 
         /// </summary>
-        private FillBufferState fillBufferState = FillBufferState.Default;
+        public FillBufferState fillBufferState { get; private set; }
 
         /// <summary>
         /// 
         /// </summary>
-        private GetWordState getWordState = GetWordState.Default;
+        public GetWordState getWordState { get; private set; }
 
         /// <summary>
         /// 
@@ -74,6 +251,13 @@ namespace justify_reloaded
         public MyWordReader(TextReader textReader) {
 
             this.textReader = textReader;
+            this.getWordState = GetWordState.Default;
+            this.fillBufferState = FillBufferState.Default;
+            this.fillBufferState = FillBufferState.Default;
+
+            FillBuffer();
+            Trim();
+            this.trimState = TrimState.Default;
         }
 
         /// <summary>
@@ -175,10 +359,18 @@ namespace justify_reloaded
                 }
                 else {
 
-                    state = TrimState.IN;
-
                     if (Buffer[index] == '\0') {
 
+                        /*
+                        if (state == TrimState.EOL) {
+
+                            state = TrimState.EOLF;
+                        }
+                        else {
+
+                            state = TrimState.EOF;
+                        }
+                        */
                         state = TrimState.EOF;
                     }
 
@@ -191,22 +383,105 @@ namespace justify_reloaded
         }
 
         /// <summary>
-        /// IN = "in line" = ' ' or '\t' was read;
-        /// EOL = "end of line" = '\n' was read;
-        /// EOF = "end of file" = '\0' was read
+        /// 
         /// </summary>
-        private enum TrimState { IN, EOL, EOF, Default };
+        public void ResetTrimState() {
+
+            this.trimState = TrimState.Default;
+        }
+
+        /// <summary>
+        /// <para>IN = "in line" = ' ' or '\t' was read;</para>
+        /// <para>EOL = "end of line" = multiple '\n' was read;</para>
+        /// <para>EOF = "end of file" = '\0' was read</para>
+        /// <para>EOLF = "end of line, file" = multiple '\n' were read and'\0' was read</para>
+        /// </summary>
+        public enum TrimState {
+            EOLF, 
+            EOL, 
+            EOF, Default };
 
         /// <summary>
         /// IN = FillBuffer read 1024 chars;
         /// EOB = FillBuffer read < 1024 chars;
         /// </summary>
-        private enum FillBufferState { IN, EOB, Default };
+        public enum FillBufferState { IN, EOB, Default };
 
         /// <summary>
         /// EOW = "end of word" = White space was red;
         /// EOF = "end of file" = '\0' read
         /// </summary>
-        private enum GetWordState { EOW, EOF, Default };
+        public enum GetWordState { EOW, EOF, Default };
+    }
+
+    class MyWordWriter {
+
+        private TextWriter textWriter;
+        private int LineSize;
+        public MyWordWriter( TextWriter textWriter, int lineSize ) {
+
+            this.textWriter = textWriter;
+            this.LineSize = lineSize;
+        }
+
+        public void PrintEmptyLine() {
+
+            this.textWriter.WriteLine();
+        }
+
+        public void PrintNormalLine(List<string> words) {
+
+            StringBuilder line = new StringBuilder();
+
+            for (int i = 0; i < words.Count; i++) {
+
+                line.Append(words[ i ]);
+
+                if (i < (words.Count - 1)) {
+
+                    line.Append(' ');
+                }
+            }
+
+            this.textWriter.WriteLine(line.ToString());
+        }
+
+        public void PrintFormatedLine(List<string> words, int currentLength) {
+
+            int numSpaces = words.Count - 1;
+            int toFill = this.LineSize - currentLength;
+
+            int evenSpaces = toFill / numSpaces;
+            int remainingSpaces = toFill % numSpaces;
+
+            StringBuilder line = new StringBuilder();
+
+            for (int i = 0; i < words.Count; i++) {
+
+                line.Append(words[ i ]);
+
+                if (i < words.Count - 1) {
+                    
+                    for (int j = 0; j < evenSpaces; j++) {
+
+                        line.Append(' ');
+                    }
+
+                    if (remainingSpaces > 0) {
+
+                        line.Append(' ');
+
+                        remainingSpaces--;
+                    }
+                }
+            }
+
+            this.textWriter.WriteLine(line.ToString());
+        }
+
+        public void Flush() {
+
+            this.textWriter.Flush();
+        }
     }
 }

@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
 using System.IO;
+using System.Linq;
 
-namespace NezarkaBookstore
-{
-	//
-	// Model
-	//
+namespace nezarka_store {
 
-	class ModelStore {
+	public class ModelStore {
 		private List<Book> books = new List<Book>();
 		private List<Customer> customers = new List<Customer>();
 
@@ -21,33 +17,44 @@ namespace NezarkaBookstore
 
 		public Book GetBook(int id) {
 
-            try {
+            if (IsBook(id)) {
 
                 return books.Find(b => b.Id == id);
             }
-            catch (InvalidOperationException) {
+            else {
+
                 return default(Book);
             }
 		}
 
-		public Customer GetCustomer(int id) {
+        public Customer GetCustomer( int id ) {
 
-            try {
+            if (IsCustomer(id)) {
 
                 return customers.Find(c => c.Id == id);
             }
-            catch (InvalidOperationException) {
+            else {
 
                 return default(Customer);
             }
 		}
+        public bool IsCustomer( int id ) {
 
-		public static ModelStore LoadFrom(TextReader reader, out bool wrongInput) {
+            return ( customers.Where(x => x.Id == id).Count() == 1 );
+        }
+
+        public bool IsBook( int id ) {
+
+            return ( books.Where(x => x.Id == id).Count() == 1 );
+        }
+
+        public static ModelStore LoadFrom(TextReader reader, out bool wrongInput) {
 			var store = new ModelStore();
 
-            wrongInput = false;
+            wrongInput = true;
 
 			try {
+
 				if (reader.ReadLine() != "DATA-BEGIN") {
 
 					return null;
@@ -55,14 +62,17 @@ namespace NezarkaBookstore
 
 				while (true) {
 
-                    wrongInput = false;
+                    wrongInput = true;
 					string line = reader.ReadLine();
 
 					if (line == null) {
 
 						return null;
 
-					} else if (line == "DATA-END") {
+					} 
+                    else if (line == "DATA-END") {
+
+                        wrongInput = false;
 
 						break;
 					}
@@ -76,19 +86,13 @@ namespace NezarkaBookstore
                             if (Book.TryParse(tokens, out Book book)) {
 
                                 //is this book original?
-                                if (store.GetBook(book.Id) != null) {
-
-                                    wrongInput = true;
-                                }
-                                else {
+                                if (store.GetBook(book.Id) == null) {
 
                                     store.books.Add(book);
+                                    wrongInput = false;
                                 }
                             }
-                            else {
 
-                                wrongInput = true;
-                            }
 							break;
 
 						case "CUSTOMER":
@@ -96,19 +100,13 @@ namespace NezarkaBookstore
                             if (Customer.TryParse(tokens, out Customer customer)) {
 
                                 //is this customer new?
-                                if (store.GetCustomer(customer.Id) != null) {
-
-                                    wrongInput = true;
-                                }
-                                else {
+                                if (store.GetCustomer(customer.Id) == null) {
 
                                     store.customers.Add(customer);
+                                    wrongInput = false;
                                 }
                             }
-                            else {
 
-                                wrongInput = true;
-                            }
 							break;
 
 						case "CART-ITEM":
@@ -116,33 +114,26 @@ namespace NezarkaBookstore
                             if (ShoppingCartItem.TryParse(tokens, out ShoppingCartItem shoppingCartItem, out int userID)) {
 
                                 //does this customer exist?
-                                if (store.GetCustomer(userID) != null) {
+                                if (store.GetCustomer(userID) == null) {
 
-                                    //does the book exist?
-                                    if (store.GetBook(shoppingCartItem.BookId) != null) {
-
-                                        Customer existingCustomer = store.GetCustomer(userID);
-                                        existingCustomer.ShoppingCart.AddItem(shoppingCartItem);
-                                    }
-                                    else {
-
-                                        wrongInput = true;
-                                    }
+                                    break;
                                 }
-                                else {
 
-                                    wrongInput = true;
+                                //does the book exist?
+                                if (store.GetBook(shoppingCartItem.BookId) == null) {
+
+                                    break;
                                 }
-                            }
-                            else {
 
-                                wrongInput = true;
+                                Customer existingCustomer = store.GetCustomer(userID);
+                                existingCustomer.ShoppingCart.AddItem(shoppingCartItem);
+                                wrongInput = false;
                             }
+
 							break;
 
 						default:
-							
-                            wrongInput = true;
+
                             break;
 					}
 
@@ -152,7 +143,9 @@ namespace NezarkaBookstore
                     }
 				}
 			} catch (Exception ex) {
+
 				if (ex is FormatException || ex is IndexOutOfRangeException) {
+
 					return null;
 				}
 				throw;
@@ -162,7 +155,7 @@ namespace NezarkaBookstore
 		}
 	}
 
-    class Book {
+    public class Book {
         public int Id { get; set; }
         public string Title { get; set; }
         public string Author { get; set; }
@@ -199,7 +192,7 @@ namespace NezarkaBookstore
             author = data[ 3 ];
 
             //price
-            if (!decimal.TryParse(data[4], out price) || id < 0) {
+            if (!decimal.TryParse(data[4], out price) || price < 0) {
 
                 return false;
             }
@@ -215,7 +208,7 @@ namespace NezarkaBookstore
         }
 	}
 
-	class Customer {
+	public class Customer {
 		private ShoppingCart shoppingCart;
 
 		public int Id { get; set; }
@@ -273,7 +266,7 @@ namespace NezarkaBookstore
 		}
 	}
 
-	class ShoppingCartItem {
+	public class ShoppingCartItem {
 		public int BookId { get; set; }
 		public int Count { get; set; }
 
@@ -297,7 +290,7 @@ namespace NezarkaBookstore
                 return false;
             }
 
-            if (!int.TryParse(data[1], out userId) || userId < 0) {
+            if (!int.TryParse(data[ 1 ], out userId) || userId < 0) {
 
                 return false;
             }
@@ -307,13 +300,13 @@ namespace NezarkaBookstore
                 return false;
             }
 
-            if (!int.TryParse(data[ 1 ], out count) || count < 0) {
+            if (!int.TryParse(data[ 3 ], out count) || count < 0) {
 
                 return false;
             }
 
             shoppingCartItem = new ShoppingCartItem {
-                BookId = userId,
+                BookId = bookId,
                 Count = count
             };
 
@@ -321,13 +314,51 @@ namespace NezarkaBookstore
         }
 	}
 
-	class ShoppingCart {
+	public class ShoppingCart {
 		public int CustomerId { get; set; }
 		public List<ShoppingCartItem> Items = new List<ShoppingCartItem>();
 
         public void AddItem( ShoppingCartItem shoppingCartItem ) {
 
             Items.Add(shoppingCartItem);
+        }
+
+        public bool ConstainsBook( int bookId ) {
+
+            return Items.Where(x => x.BookId == bookId).Count() == 1;
+        }
+
+        public void AddBook( int bookId ) {
+
+            if (ConstainsBook(bookId)) {
+
+                ShoppingCartItem book = Items.Find(x => x.BookId == bookId);
+                book.Count++;
+            }
+            else {
+
+                ShoppingCartItem newBook = new ShoppingCartItem() {
+
+                    BookId = bookId,
+                    Count = 1,
+                };
+                AddItem(newBook);
+            }
+        }
+
+        public bool RemoveBook( int bookId ) {
+
+            if (ConstainsBook(bookId)) {
+
+                ShoppingCartItem book = Items.Find(x => x.BookId == bookId);
+                book.Count--;
+                if (book.Count == 0) {
+
+                    Items.Remove(book);
+                }
+                return true;
+            }
+            return false;
         }
     }
 }

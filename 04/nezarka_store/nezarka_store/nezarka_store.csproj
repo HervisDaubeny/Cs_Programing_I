@@ -46,6 +46,8 @@
     <Compile Include="NezarkaModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StoreViewer.cs" />
+    <Compile Include="SupremeCommander.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -1,5 +1,4 @@
-﻿using NezarkaBookstore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,16 +8,22 @@ namespace nezarka_store {
     class Program {
         static void Main( string[] args ) {
 
-            //SupremeCommander Thor = new SupremeCommander();
+            StoreViewer storeViewer = new StoreViewer(Console.Out);
+            SupremeCommander Thor = new SupremeCommander();
+            bool wrongStoreInput;
 
-            //Thor.GetData
+            Thor.GetData(Console.In, out wrongStoreInput);
 
-            ModelStore.LoadFrom(Console.Out);
+            if (wrongStoreInput) {
 
+                Thor.PrintDataError();
 
+                return;
+            }
 
+            Thor.InititateCommandProcessing(Console.In, storeViewer);
 
-
+            Thor.DisposeStore();
         }
     }
 }

@@ -143,7 +143,7 @@ namespace nezarka_store {
 
         public void ExecuteCommand(CommandType type, int customerId, int bookId) {
 
-            if (!Nezarka.IsCustomer(customerId)) {
+            if (!this.Nezarka.IsCustomer(customerId)) {
 
                 this.storeViewer.InvalidRequest();
                 this.storeViewer.Indent();
@@ -153,7 +153,7 @@ namespace nezarka_store {
 
             if (type == CommandType.PrintBookDetail || type == CommandType.CartAddBook || type == CommandType.CartRemoveBook) {
 
-                if (!Nezarka.IsBook(bookId)) {
+                if (!this.Nezarka.IsBook(bookId)) {
 
                     this.storeViewer.InvalidRequest();
                     this.storeViewer.Indent();

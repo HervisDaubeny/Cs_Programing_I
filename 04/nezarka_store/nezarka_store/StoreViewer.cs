@@ -8,212 +8,239 @@ using System.Threading.Tasks;
 namespace nezarka_store {
     public class StoreViewer {
 
-        private TextWriter Out;
+        private TextWriter Writer;
 
-        public StoreViewer( TextWriter Out ) {
+        /// <summary>
+        /// Constructor. Takes in TextWriter instance, wich it sets as its property.
+        /// </summary>
+        public StoreViewer( TextWriter writer ) {
 
-            this.Out = Out;
+            this.Writer = writer;
         }
 
+        /// <summary>
+        /// Prints HTML of customers shoping cart.
+        /// </summary>
+        /// <param name="customer">Customer object from Nezarka's database.</param>
+        /// <param name="store">Nezarka it self. Used solely for it's database records.</param>
         public void GetShopingCart( Customer customer, ModelStore store ) {
 
-            Out.WriteLine("<!DOCTYPE html>");
-            Out.WriteLine("<html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">");
-            Out.WriteLine("<head>");
-            Out.WriteLine("	<meta charset=\"utf-8\" />");
-            Out.WriteLine("	<title>Nezarka.net: Online Shopping for Books</title>");
-            Out.WriteLine("</head>");
-            Out.WriteLine("<body>");
-            Out.WriteLine("	<style type=\"text/css\">");
-            Out.WriteLine("		table, th, td {");
-            Out.WriteLine("			border: 1px solid black;");
-            Out.WriteLine("			border-collapse: collapse;");
-            Out.WriteLine("		}");
-            Out.WriteLine("		table {");
-            Out.WriteLine("			margin-bottom: 10px;");
-            Out.WriteLine("		}");
-            Out.WriteLine("		pre {");
-            Out.WriteLine("			line-height: 70%;");
-            Out.WriteLine("		}");
-            Out.WriteLine("	</style>");
-            Out.WriteLine("	<h1><pre>  v,<br />Nezarka.NET: Online Shopping for Books</pre></h1>");
-            Out.WriteLine($"	{customer.FirstName}, here is your menu:");
-            Out.WriteLine("	<table>");
-            Out.WriteLine("		<tr>");
-            Out.WriteLine("			<td><a href=\"/Books\">Books</a></td>");
-            Out.WriteLine($"			<td><a href=\"/ShoppingCart\">Cart ({customer.ShoppingCart.Items.Count})</a></td>");
-            Out.WriteLine("		</tr>");
-            Out.WriteLine("	</table>");
+            Writer.WriteLine("<!DOCTYPE html>");
+            Writer.WriteLine("<html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">");
+            Writer.WriteLine("<head>");
+            Writer.WriteLine("	<meta charset=\"utf-8\" />");
+            Writer.WriteLine("	<title>Nezarka.net: Online Shopping for Books</title>");
+            Writer.WriteLine("</head>");
+            Writer.WriteLine("<body>");
+            Writer.WriteLine("	<style type=\"text/css\">");
+            Writer.WriteLine("		table, th, td {");
+            Writer.WriteLine("			border: 1px solid black;");
+            Writer.WriteLine("			border-collapse: collapse;");
+            Writer.WriteLine("		}");
+            Writer.WriteLine("		table {");
+            Writer.WriteLine("			margin-bottom: 10px;");
+            Writer.WriteLine("		}");
+            Writer.WriteLine("		pre {");
+            Writer.WriteLine("			line-height: 70%;");
+            Writer.WriteLine("		}");
+            Writer.WriteLine("	</style>");
+            Writer.WriteLine("	<h1><pre>  v,<br />Nezarka.NET: Online Shopping for Books</pre></h1>");
+            Writer.WriteLine($"	{customer.FirstName}, here is your menu:");
+            Writer.WriteLine("	<table>");
+            Writer.WriteLine("		<tr>");
+            Writer.WriteLine("			<td><a href=\"/Books\">Books</a></td>");
+            Writer.WriteLine($"			<td><a href=\"/ShoppingCart\">Cart ({customer.ShoppingCart.Items.Count})</a></td>");
+            Writer.WriteLine("		</tr>");
+            Writer.WriteLine("	</table>");
 
             if (customer.ShoppingCart.Items.Count == 0) {
 
-                Out.WriteLine("	Your shopping cart is EMPTY.");
+                Writer.WriteLine("	Your shopping cart is EMPTY.");
             }
             else {
 
-                Out.WriteLine("	Your shopping cart:");
-                Out.WriteLine("	<table>");
-                Out.WriteLine("		<tr>");
-                Out.WriteLine("			<th>Title</th>");
-                Out.WriteLine("			<th>Count</th>");
-                Out.WriteLine("			<th>Price</th>");
-                Out.WriteLine("			<th>Actions</th>");
-                Out.WriteLine("		</tr>");
+                Writer.WriteLine("	Your shopping cart:");
+                Writer.WriteLine("	<table>");
+                Writer.WriteLine("		<tr>");
+                Writer.WriteLine("			<th>Title</th>");
+                Writer.WriteLine("			<th>Count</th>");
+                Writer.WriteLine("			<th>Price</th>");
+                Writer.WriteLine("			<th>Actions</th>");
+                Writer.WriteLine("		</tr>");
                 decimal SUM = 0;
 
                 for (int i = 0; i < customer.ShoppingCart.Items.Count; i++) {
 
                     Book b = store.GetBook(customer.ShoppingCart.Items[ i ].BookId);
-                    Out.WriteLine("		<tr>");
-                    Out.WriteLine($"			<td><a href=\"/Books/Detail/{b.Id}\">{b.Title}</a></td>");
-                    Out.WriteLine($"			<td>{customer.ShoppingCart.Items[ i ].Count}</td>");
+                    Writer.WriteLine("		<tr>");
+                    Writer.WriteLine($"			<td><a href=\"/Books/Detail/{b.Id}\">{b.Title}</a></td>");
+                    Writer.WriteLine($"			<td>{customer.ShoppingCart.Items[ i ].Count}</td>");
                     if (customer.ShoppingCart.Items[ i ].Count > 1)
-                        Out.WriteLine($"			<td>{customer.ShoppingCart.Items[ i ].Count} * {b.Price} = {customer.ShoppingCart.Items[ i ].Count * b.Price} EUR</td>");
+                        Writer.WriteLine($"			<td>{customer.ShoppingCart.Items[ i ].Count} * {b.Price} = {customer.ShoppingCart.Items[ i ].Count * b.Price} EUR</td>");
                     else
-                        Out.WriteLine($"			<td>{b.Price} EUR</td>");
+                        Writer.WriteLine($"			<td>{b.Price} EUR</td>");
                     SUM += ( customer.ShoppingCart.Items[ i ].Count * b.Price );
-                    Out.WriteLine($"			<td>&lt;<a href=\"/ShoppingCart/Remove/{b.Id}\">Remove</a>&gt;</td>");
-                    Out.WriteLine("		</tr>");
+                    Writer.WriteLine($"			<td>&lt;<a href=\"/ShoppingCart/Remove/{b.Id}\">Remove</a>&gt;</td>");
+                    Writer.WriteLine("		</tr>");
                 }
-                Out.WriteLine("	</table>");
-                Out.WriteLine($"	Total price of all items: {SUM} EUR");
+                Writer.WriteLine("	</table>");
+                Writer.WriteLine($"	Total price of all items: {SUM} EUR");
             }
 
-            Out.WriteLine("</body>");
-            Out.WriteLine("</html>");
-            Out.Flush();
+            Writer.WriteLine("</body>");
+            Writer.WriteLine("</html>");
+            Writer.Flush();
         }
 
+        /// <summary>
+        /// Prints HTML with detailed information about specific book of specific user.
+        /// </summary>
+        /// <param name="book">Book from Nezarka's database.</param>
+        /// <param name="customer">Customer object from Nezarka's database.</param>
         public void GetBookDetail( Book book, Customer customer ) {
 
-            Out.WriteLine("<!DOCTYPE html>");
-            Out.WriteLine("<html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">");
-            Out.WriteLine("<head>");
-            Out.WriteLine("	<meta charset=\"utf-8\" />");
-            Out.WriteLine("	<title>Nezarka.net: Online Shopping for Books</title>");
-            Out.WriteLine("</head>");
-            Out.WriteLine("<body>");
-            Out.WriteLine("	<style type=\"text/css\">");
-            Out.WriteLine("		table, th, td {");
-            Out.WriteLine("			border: 1px solid black;");
-            Out.WriteLine("			border-collapse: collapse;");
-            Out.WriteLine("		}");
-            Out.WriteLine("		table {");
-            Out.WriteLine("			margin-bottom: 10px;");
-            Out.WriteLine("		}");
-            Out.WriteLine("		pre {");
-            Out.WriteLine("			line-height: 70%;");
-            Out.WriteLine("		}");
-            Out.WriteLine("	</style>");
-            Out.WriteLine("	<h1><pre>  v,<br />Nezarka.NET: Online Shopping for Books</pre></h1>");
-            Out.WriteLine($"	{customer.FirstName}, here is your menu:");
-            Out.WriteLine("	<table>");
-            Out.WriteLine("		<tr>");
-            Out.WriteLine("			<td><a href=\"/Books\">Books</a></td>");
-            Out.WriteLine($"			<td><a href=\"/ShoppingCart\">Cart ({customer.ShoppingCart.Items.Count})</a></td>");
-            Out.WriteLine("		</tr>");
-            Out.WriteLine("	</table>");
-            Out.WriteLine("	Book details:");
-            Out.WriteLine("	<h2>{0}</h2>", book.Title);
-            Out.WriteLine("	<p style=\"margin-left: 20px\">");
-            Out.WriteLine("	Author: {0}<br />", book.Author);
-            Out.WriteLine("	Price: {0} EUR<br />", book.Price);
-            Out.WriteLine("	</p>");
-            Out.WriteLine("	<h3>&lt;<a href=\"/ShoppingCart/Add/{0}\">Buy this book</a>&gt;</h3>", book.Id);
-            Out.WriteLine("</body>");
-            Out.WriteLine("</html>");
-            Out.Flush();
+            Writer.WriteLine("<!DOCTYPE html>");
+            Writer.WriteLine("<html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">");
+            Writer.WriteLine("<head>");
+            Writer.WriteLine("	<meta charset=\"utf-8\" />");
+            Writer.WriteLine("	<title>Nezarka.net: Online Shopping for Books</title>");
+            Writer.WriteLine("</head>");
+            Writer.WriteLine("<body>");
+            Writer.WriteLine("	<style type=\"text/css\">");
+            Writer.WriteLine("		table, th, td {");
+            Writer.WriteLine("			border: 1px solid black;");
+            Writer.WriteLine("			border-collapse: collapse;");
+            Writer.WriteLine("		}");
+            Writer.WriteLine("		table {");
+            Writer.WriteLine("			margin-bottom: 10px;");
+            Writer.WriteLine("		}");
+            Writer.WriteLine("		pre {");
+            Writer.WriteLine("			line-height: 70%;");
+            Writer.WriteLine("		}");
+            Writer.WriteLine("	</style>");
+            Writer.WriteLine("	<h1><pre>  v,<br />Nezarka.NET: Online Shopping for Books</pre></h1>");
+            Writer.WriteLine($"	{customer.FirstName}, here is your menu:");
+            Writer.WriteLine("	<table>");
+            Writer.WriteLine("		<tr>");
+            Writer.WriteLine("			<td><a href=\"/Books\">Books</a></td>");
+            Writer.WriteLine($"			<td><a href=\"/ShoppingCart\">Cart ({customer.ShoppingCart.Items.Count})</a></td>");
+            Writer.WriteLine("		</tr>");
+            Writer.WriteLine("	</table>");
+            Writer.WriteLine("	Book details:");
+            Writer.WriteLine("	<h2>{0}</h2>", book.Title);
+            Writer.WriteLine("	<p style=\"margin-left: 20px\">");
+            Writer.WriteLine("	Author: {0}<br />", book.Author);
+            Writer.WriteLine("	Price: {0} EUR<br />", book.Price);
+            Writer.WriteLine("	</p>");
+            Writer.WriteLine("	<h3>&lt;<a href=\"/ShoppingCart/Add/{0}\">Buy this book</a>&gt;</h3>", book.Id);
+            Writer.WriteLine("</body>");
+            Writer.WriteLine("</html>");
+            Writer.Flush();
         }
 
-        public void GetBooksHtml( Customer cust, ModelStore store ) {
+        /// <summary>
+        /// Prints HTML containing list of all books the customer has.
+        /// </summary>
+        /// <param name="customer">Customer object from Nezarka's database.</param>
+        /// <param name="store">Nezarka it self. Used solely for it's database records.</param>
+        public void GetBooksHtml( Customer customer, ModelStore store ) {
 
             IList<Book> books = store.GetBooks();
 
-            Out.WriteLine("<!DOCTYPE html>");
-            Out.WriteLine("<html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">");
-            Out.WriteLine("<head>");
-            Out.WriteLine("	<meta charset=\"utf-8\" />");
-            Out.WriteLine("	<title>Nezarka.net: Online Shopping for Books</title>");
-            Out.WriteLine("</head>");
-            Out.WriteLine("<body>");
-            Out.WriteLine("	<style type=\"text/css\">");
-            Out.WriteLine("		table, th, td {");
-            Out.WriteLine("			border: 1px solid black;");
-            Out.WriteLine("			border-collapse: collapse;");
-            Out.WriteLine("		}");
-            Out.WriteLine("		table {");
-            Out.WriteLine("			margin-bottom: 10px;");
-            Out.WriteLine("		}");
-            Out.WriteLine("		pre {");
-            Out.WriteLine("			line-height: 70%;");
-            Out.WriteLine("		}");
-            Out.WriteLine("	</style>");
-            Out.WriteLine("	<h1><pre>  v,<br />Nezarka.NET: Online Shopping for Books</pre></h1>");
-            Out.WriteLine("	{0}, here is your menu:", cust.FirstName);
-			Out.WriteLine("	<table>");
-            Out.WriteLine("		<tr>");
-            Out.WriteLine("			<td><a href=\"/Books\">Books</a></td>");
-            Out.WriteLine($"			<td><a href=\"/ShoppingCart\">Cart ({cust.ShoppingCart.Items.Count})</a></td>");
-			Out.WriteLine("		</tr>");
-            Out.WriteLine("	</table>");
-            Out.WriteLine("	Our books for you:");
-            Out.WriteLine("	<table>");
+            Writer.WriteLine("<!DOCTYPE html>");
+            Writer.WriteLine("<html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">");
+            Writer.WriteLine("<head>");
+            Writer.WriteLine("	<meta charset=\"utf-8\" />");
+            Writer.WriteLine("	<title>Nezarka.net: Online Shopping for Books</title>");
+            Writer.WriteLine("</head>");
+            Writer.WriteLine("<body>");
+            Writer.WriteLine("	<style type=\"text/css\">");
+            Writer.WriteLine("		table, th, td {");
+            Writer.WriteLine("			border: 1px solid black;");
+            Writer.WriteLine("			border-collapse: collapse;");
+            Writer.WriteLine("		}");
+            Writer.WriteLine("		table {");
+            Writer.WriteLine("			margin-bottom: 10px;");
+            Writer.WriteLine("		}");
+            Writer.WriteLine("		pre {");
+            Writer.WriteLine("			line-height: 70%;");
+            Writer.WriteLine("		}");
+            Writer.WriteLine("	</style>");
+            Writer.WriteLine("	<h1><pre>  v,<br />Nezarka.NET: Online Shopping for Books</pre></h1>");
+            Writer.WriteLine("	{0}, here is your menu:", customer.FirstName);
+			Writer.WriteLine("	<table>");
+            Writer.WriteLine("		<tr>");
+            Writer.WriteLine("			<td><a href=\"/Books\">Books</a></td>");
+            Writer.WriteLine($"			<td><a href=\"/ShoppingCart\">Cart ({customer.ShoppingCart.Items.Count})</a></td>");
+			Writer.WriteLine("		</tr>");
+            Writer.WriteLine("	</table>");
+            Writer.WriteLine("	Our books for you:");
+            Writer.WriteLine("	<table>");
 
 			if (books.Count > 0) {
 
-                Out.WriteLine("		<tr>");
+                Writer.WriteLine("		<tr>");
             }
 
             for (int i = 0; i < books.Count; i++) {
 
                 if (i % 3 == 0 && i != 0) {
 
-                    Out.WriteLine("		</tr>");
-                    Out.WriteLine("		<tr>");
+                    Writer.WriteLine("		</tr>");
+                    Writer.WriteLine("		<tr>");
                 }
 
-                Out.WriteLine("			<td style=\"padding: 10px;\">");
-                Out.WriteLine("				<a href=\"/Books/Detail/{0}\">{1}</a><br />", books[ i ].Id, books[ i ].Title);
-                Out.WriteLine("				Author: {0}<br />", books[ i ].Author);
-                Out.WriteLine("				Price: {0} EUR &lt;<a href=\"/ShoppingCart/Add/{1}\">Buy</a>&gt;", books[ i ].Price, books[ i ].Id);
-                Out.WriteLine("			</td>");
+                Writer.WriteLine("			<td style=\"padding: 10px;\">");
+                Writer.WriteLine("				<a href=\"/Books/Detail/{0}\">{1}</a><br />", books[ i ].Id, books[ i ].Title);
+                Writer.WriteLine("				Author: {0}<br />", books[ i ].Author);
+                Writer.WriteLine("				Price: {0} EUR &lt;<a href=\"/ShoppingCart/Add/{1}\">Buy</a>&gt;", books[ i ].Price, books[ i ].Id);
+                Writer.WriteLine("			</td>");
             }
 
             if (books.Count > 0) {
 
-                Out.WriteLine("		</tr>");
+                Writer.WriteLine("		</tr>");
             }
 
-            Out.WriteLine("	</table>");
-            Out.WriteLine("</body>");
-            Out.WriteLine("</html>");
-            Out.Flush();
+            Writer.WriteLine("	</table>");
+            Writer.WriteLine("</body>");
+            Writer.WriteLine("</html>");
+            Writer.Flush();
         }
 
+        /// <summary>
+        /// Prints HTML shown when the request was invalid either in syntax or data.
+        /// </summary>
         public void InvalidRequest() {
 
-            Out.WriteLine("<!DOCTYPE html>");
-            Out.WriteLine("<html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">");
-            Out.WriteLine("<head>");
-            Out.WriteLine("	<meta charset=\"utf-8\" />");
-            Out.WriteLine("	<title>Nezarka.net: Online Shopping for Books</title>");
-            Out.WriteLine("</head>");
-            Out.WriteLine("<body>");
-            Out.WriteLine("<p>Invalid request.</p>");
-            Out.WriteLine("</body>");
-            Out.WriteLine("</html>");
-            Out.Flush();
+            Writer.WriteLine("<!DOCTYPE html>");
+            Writer.WriteLine("<html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">");
+            Writer.WriteLine("<head>");
+            Writer.WriteLine("	<meta charset=\"utf-8\" />");
+            Writer.WriteLine("	<title>Nezarka.net: Online Shopping for Books</title>");
+            Writer.WriteLine("</head>");
+            Writer.WriteLine("<body>");
+            Writer.WriteLine("<p>Invalid request.</p>");
+            Writer.WriteLine("</body>");
+            Writer.WriteLine("</html>");
+            Writer.Flush();
         }
 
+        /// <summary>
+        /// Prints indentation line.
+        /// </summary>
         public void Indent() {
 
-            Out.WriteLine("====");
-            Out.Flush();
+            Writer.WriteLine("====");
+            Writer.Flush();
         }
 
+        /// <summary>
+        /// Clears its Writer property from memory.
+        /// </summary>
         public void Dispose() {
 
-            this.Out = null;
+            this.Writer = null;
         }
     }
 }

@@ -6,6 +6,12 @@ using System.Threading.Tasks;
 
 namespace nezarka_store {
     class Program {
+        /// <summary>
+        /// This method takes care of launching the actual program.
+        /// It creates instances of objects needed in the end it disposes them.
+        /// Also it shuts the program down in case of Data error.
+        /// </summary>
+        /// <param name="args"></param>
         static void Main( string[] args ) {
 
             StoreViewer storeViewer = new StoreViewer(Console.Out);
@@ -24,6 +30,7 @@ namespace nezarka_store {
             Thor.InititateCommandProcessing(Console.In, storeViewer);
 
             Thor.DisposeStore();
+            storeViewer.Dispose();
         }
     }
 }

@@ -6,15 +6,27 @@ using System.Linq;
 
 namespace nezarka_store {
 
+    /// <summary>
+    /// Represents Nezarka's database.
+    /// </summary>
 	public class ModelStore {
 		private List<Book> books = new List<Book>();
 		private List<Customer> customers = new List<Customer>();
 
+        /// <summary>
+        /// Get list of books in database.
+        /// </summary>
+        /// <returns>List of Book.</returns>
 		public IList<Book> GetBooks() {
 
             return books;
 		}
 
+        /// <summary>
+        /// Get specific book from the database.
+        /// </summary>
+        /// <param name="id">Identification number of the book.</param>
+        /// <returns>Book object.</returns>
 		public Book GetBook(int id) {
 
             if (IsBook(id)) {
@@ -27,6 +39,11 @@ namespace nezarka_store {
             }
 		}
 
+        /// <summary>
+        /// Get specific customer from the database.
+        /// </summary>
+        /// <param name="id">Identification number of the customer.</param>
+        /// <returns>Customer object.</returns>
         public Customer GetCustomer( int id ) {
 
             if (IsCustomer(id)) {
@@ -38,16 +55,34 @@ namespace nezarka_store {
                 return default(Customer);
             }
 		}
+
+        /// <summary>
+        /// Check if customer is listed in the database.
+        /// </summary>
+        /// <param name="id">Identification number of the customer.</param>
+        /// <returns>True if customer has existing record in the database, false if not.</returns>
         public bool IsCustomer( int id ) {
 
             return ( customers.Where(x => x.Id == id).Count() == 1 );
         }
 
+        /// <summary>
+        /// Check if book is listed in the database.
+        /// </summary>
+        /// <param name="id">Identification number of the book.</param>
+        /// <returns>True if book has existing record in the database, false if not.</returns>
         public bool IsBook( int id ) {
 
             return ( books.Where(x => x.Id == id).Count() == 1 );
         }
 
+        /// <summary>
+        /// Parses input data to database friendly format an includes them in it.
+        /// If there is any error in the given data, process is aborted and empty object is returned.
+        /// </summary>
+        /// <param name="reader">Text reader. Must be set to read STDIN.</param>
+        /// <param name="wrongInput">Flag that carries information of error in data loading / parsing.</param>
+        /// <returns>Database object if the data were correct. NULL if they were not.</returns>
         public static ModelStore LoadFrom(TextReader reader, out bool wrongInput) {
 			var store = new ModelStore();
 
@@ -155,6 +190,9 @@ namespace nezarka_store {
 		}
 	}
 
+    /// <summary>
+    /// Represents book object in Nezarka's database.
+    /// </summary>
     public class Book {
         public int Id { get; set; }
         public string Title { get; set; }
@@ -162,11 +200,11 @@ namespace nezarka_store {
         public decimal Price { get; set; }
 
         /// <summary>
-        /// Try to create new Book.
+        /// Try to parse input data and create new Book object.
         /// </summary>
         /// <param name="data">Array of string. Splited input line.</param>
         /// <param name="book">Out value, contains new instance of Book.</param>
-        /// <returns>True, if unsuccesfull return false.</returns>
+        /// <returns>True on succes, false otherwise.</returns>
         public static bool TryParse( string[] data, out Book book ) {
 
             int id;
@@ -208,6 +246,9 @@ namespace nezarka_store {
         }
 	}
 
+    /// <summary>
+    /// Represents customer object in Nezarka's database.
+    /// </summary>
 	public class Customer {
 		private ShoppingCart shoppingCart;
 
@@ -216,11 +257,11 @@ namespace nezarka_store {
 		public string LastName { get; set; }
 
         /// <summary>
-        /// Try to create new Customer.
+        /// Try to parse input data and create new Customer object.
         /// </summary>
         /// <param name="data">Array of string. Splited input line.</param>
         /// <param name="customer">Out new instance of Customer.</param>
-        /// <returns>True, if unsuccesfull return false.</returns>
+        /// <returns>True on succes, false otherwise.</returns>
         public static bool TryParse( string[] data, out Customer customer ) {
 
             int id;
@@ -253,6 +294,9 @@ namespace nezarka_store {
             return true;
         }
 
+        /// <summary>
+        /// Represents its customer's shoping cart.
+        /// </summary>
         public ShoppingCart ShoppingCart {
 			get {
 				if (shoppingCart == null) {
@@ -266,17 +310,20 @@ namespace nezarka_store {
 		}
 	}
 
+    /// <summary>
+    /// Represents shoping cart's item object in Nezarka's database.
+    /// </summary>
 	public class ShoppingCartItem {
 		public int BookId { get; set; }
 		public int Count { get; set; }
 
         /// <summary>
-        /// Try to create new ShopingCartItem.
+        /// Try to parse input data and create new ShopingCartItem object.
         /// </summary>
         /// <param name="data">Array of string. Splited input line.</param>
         /// <param name="shoppingCartItem">Out new instance of ShopingCardItem.</param>
         /// <param name="userId">Out id of user the ShopingCart belongs to.</param>
-        /// <returns>True, if unsuccesfull return false.</returns>
+        /// <returns>True on succes, false otherwise.</returns>
         public static bool TryParse( string[] data, out ShoppingCartItem shoppingCartItem, out int userId ) {
 
             shoppingCartItem = default(ShoppingCartItem);
@@ -314,20 +361,37 @@ namespace nezarka_store {
         }
 	}
 
+    /// <summary>
+    /// Represents shoping cart object in Nezarka's database.
+    /// </summary>
 	public class ShoppingCart {
 		public int CustomerId { get; set; }
 		public List<ShoppingCartItem> Items = new List<ShoppingCartItem>();
 
+        /// <summary>
+        /// Adds item to its customer's shoping cart.
+        /// </summary>
+        /// <param name="shoppingCartItem">Book object to be added.</param>
         public void AddItem( ShoppingCartItem shoppingCartItem ) {
 
             Items.Add(shoppingCartItem);
         }
 
+        /// <summary>
+        /// Check if this shoping cart contains specific book.
+        /// </summary>
+        /// <param name="bookId">Identification number of the book.</param>
+        /// <returns>True if shoping cart contains the book, false if it doesn't.</returns>
         public bool ConstainsBook( int bookId ) {
 
             return Items.Where(x => x.BookId == bookId).Count() == 1;
         }
 
+        /// <summary>
+        /// Tries to add a book to this shoping cart. If it is already there, its number is incremented. 
+        /// Otherwise new Book object is created and AddItem() is called.
+        /// </summary>
+        /// <param name="bookId"></param>
         public void AddBook( int bookId ) {
 
             if (ConstainsBook(bookId)) {
@@ -346,6 +410,14 @@ namespace nezarka_store {
             }
         }
 
+        /// <summary>
+        /// Tries to remove a book from this shoping cart by decrementing its number of occurances.
+        /// Result depends on check of book's presence in the cart.
+        /// If the book is not present false is returned.
+        /// If last occurance of this book is removed, whole item is removed from the cart.
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <returns>True if the book was succesfuly removed, false if there was no book to remove.</returns>
         public bool RemoveBook( int bookId ) {
 
             if (ConstainsBook(bookId)) {

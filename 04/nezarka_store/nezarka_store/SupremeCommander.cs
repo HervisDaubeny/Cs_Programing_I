@@ -24,7 +24,7 @@ namespace nezarka_store {
         }
 
         /// <summary>
-        /// Clean your memmory.
+        /// Clears the memmory.
         /// </summary>
         public void DisposeStore() {
 
@@ -32,7 +32,7 @@ namespace nezarka_store {
         }
 
         /// <summary>
-        /// On any error in INPUT data.
+        /// On any error in INPUT data print to STDOUT.
         /// </summary>
         public void PrintDataError() {
 
@@ -40,7 +40,7 @@ namespace nezarka_store {
         }
 
         /// <summary>
-        /// Read commands from stdin. If a command is correct, it is executed. If not, invalid HTML is printed.
+        /// Reads commands from stdin. If a command is correct, it is executed. If not, invalid HTML is printed.
         /// </summary>
         /// <param name="commandReader">Text reader. Has to read STDIN.</param>
         public void InititateCommandProcessing(TextReader commandReader, StoreViewer storeViewer) {
@@ -72,12 +72,13 @@ namespace nezarka_store {
         }
 
         /// <summary>
-        /// 
+        /// Parses each command, that has been read. Checks for misspeling, unexisting data, logical mistakes, etc.
         /// </summary>
-        /// <param name="line"></param>
-        /// <param name="type"></param>
-        /// <param name="customerId"></param>
-        /// <param name="bookId"></param>
+        /// <param name="line">String containing line with the command as it was read from the input.</param>
+        /// <param name="type">Carries information of type of the command. Later used by ExecuteCommand method to decide output.</param>
+        /// <param name="customerId">Identification of customer in Nezarka's database.</param>
+        /// <param name="bookId">Identification of book in Nezarka's database.</param>
+        /// <returns>True if command is valid from syntax perspective. False otherwise.</returns>
         public bool ParseCommand( string line, out CommandType type, out int customerId, out int bookId ) {
 
             string[] data;
@@ -138,9 +139,14 @@ namespace nezarka_store {
             }
 
             return false;
-
         }
 
+        /// <summary>
+        /// Depending on CommandType this method chooses wich HTML page to show the user.
+        /// </summary>
+        /// <param name="type">Carries a type variable. Crucial for this method.</param>
+        /// <param name="customerId">Identification of the customer in Nezarka's database.</param>
+        /// <param name="bookId">Identification of the book in Nezarka's database.</param>
         public void ExecuteCommand(CommandType type, int customerId, int bookId) {
 
             if (!this.Nezarka.IsCustomer(customerId)) {
@@ -209,8 +215,10 @@ namespace nezarka_store {
 
             this.storeViewer.Indent();
         }
-
         
+        /// <summary>
+        /// Type used to carry information of wich type the command is. Used when deciding what HTML to print out.
+        /// </summary>
         public enum CommandType {
 
             Invalid,

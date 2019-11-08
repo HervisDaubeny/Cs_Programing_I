@@ -66,7 +66,7 @@ namespace nezarka_store {
                 else {
 
                     this.storeViewer.InvalidRequest();
-                    this.storeViewer.InvalidRequest();
+                    this.storeViewer.Indent();
                 }
             }
         }
@@ -146,6 +146,7 @@ namespace nezarka_store {
             if (!Nezarka.IsCustomer(customerId)) {
 
                 this.storeViewer.InvalidRequest();
+                this.storeViewer.Indent();
 
                 return;
             }
@@ -155,6 +156,7 @@ namespace nezarka_store {
                 if (!Nezarka.IsBook(bookId)) {
 
                     this.storeViewer.InvalidRequest();
+                    this.storeViewer.Indent();
 
                     return;
                 }

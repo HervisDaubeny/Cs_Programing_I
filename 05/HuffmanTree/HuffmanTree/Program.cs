@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,14 +10,26 @@ namespace HuffmanTree {
 
         static void Main( string[] args ) {
 
-            bool ErrorEncountered = default(bool);
-
-            Run(out ErrorEncountered);
+            Run(args);
         }
 
-        public static void Run(out bool errorEncountered) {
+        public static void Run(string[] args) {
 
-            errorEncountered = default(bool);
+            string error = default(string);
+
+            if(!ArgumentCheck.IsOneArgument(args, out error)) {
+
+                Writer.WriteToConsole(error);
+
+                return;
+            }
+
+            if(!ArgumentCheck.IsFileReadable(args[0], out error)) {
+
+                Writer.WriteToConsole(error);
+
+                return;
+            }
         }
     }
 }

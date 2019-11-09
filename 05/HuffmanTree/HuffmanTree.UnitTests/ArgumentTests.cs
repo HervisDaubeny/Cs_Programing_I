@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace HuffmanTree.UnitTests {
@@ -7,6 +8,9 @@ namespace HuffmanTree.UnitTests {
         [TestMethod]
         public void CheckArguments_WrongNumberOfArgs_PrintError() {
 
+            string error = default(string);
+
+            ArgumentCheck.IsOneArgument(args)
         }
     }
 }

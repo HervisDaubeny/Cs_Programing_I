@@ -46,7 +46,7 @@ namespace HuffmanTree {
 
                 testStream = File.OpenRead(path);
             }
-            catch (Exception e) {
+            catch (Exception) {
 
                 error = FileError;
 

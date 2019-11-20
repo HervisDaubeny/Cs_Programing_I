@@ -5,24 +5,20 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace HuffmanTree {
-    
     public class Tree {
-
         public string Value { get; private set; }
         public int TimeOfCreation { get; private set; }
-        public int Weight { get; private set; }
+        public ulong Weight { get; private set; }
         public TreeType Type { get; private set; }
         public Tree LeftSon { get; private set; }
         public Tree RightSon { get; private set; }
-
 
         /// <summary>
         /// Creates new leaf.
         /// </summary>
         /// <param name="character">Number of character to be represented by this leaf.</param>
         /// <param name="weight">Number of occurances of character.</param>
-        public Tree( int originTime, int character, int weight ) {
-
+        public Tree( int originTime, int character, ulong weight ) {
             this.TimeOfCreation = originTime;
             this.Value = convertLeafValueToString(character, weight);
             this.Weight = weight;
@@ -36,7 +32,6 @@ namespace HuffmanTree {
         /// <param name="left"></param>
         /// <param name="right"></param>
         public Tree( int originTime, Tree left, Tree right) {
-
             this.Type = TreeType.Knot;
             this.Value = convertRootValueToString(left.Weight, right.Weight);
             this.Weight = left.Weight + right.Weight;
@@ -54,9 +49,7 @@ namespace HuffmanTree {
         /// <param name="originTime">Step of treebuilding algorithm describing when this Tree will have been created.</param>
         /// <returns></returns>
         public Tree MergeTrees( int originTime, Tree firstTree, Tree secondTree) {
-
             Tree iAmRoot = new Tree(originTime, firstTree, secondTree);
-
             return iAmRoot;
         }
 
@@ -64,7 +57,6 @@ namespace HuffmanTree {
         /// Describes position of vertex in tree strucrure.
         /// </summary>
         public enum TreeType {
-
             Leaf,
             Knot
         }
@@ -75,8 +67,7 @@ namespace HuffmanTree {
         /// <param name="character">Number of character.</param>
         /// <param name="occurances">Number of occurances of character in INPUT file.</param>
         /// <returns>String in format required for leaf.</returns>
-        public string convertLeafValueToString(int character, int occurances) {
-
+        public string convertLeafValueToString(int character, ulong occurances) {
             return "*" + character.ToString() + ":" + occurances.ToString();
         }
 
@@ -86,8 +77,7 @@ namespace HuffmanTree {
         /// <param name="firstWeight">Weight of first tree.</param>
         /// <param name="secondWeight">Weighr of second tree.</param>
         /// <returns>String in format required for root.</returns>
-        public string convertRootValueToString(int firstWeight, int secondWeight) {
-
+        public string convertRootValueToString(ulong firstWeight, ulong secondWeight) {
             return ( firstWeight + secondWeight ).ToString();
         }
     }

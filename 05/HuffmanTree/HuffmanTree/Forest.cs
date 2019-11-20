@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 namespace HuffmanTree {
 
     class Forest {
-
         public SortedSet<Tree> Trees { get; private set; }
         public int Time { get; private set; }
 
@@ -15,7 +14,6 @@ namespace HuffmanTree {
         /// Creates new instance of Forest class.
         /// </summary>
         public Forest() {
-
             Trees = new SortedSet<Tree>(new TreeComparer());
             Time = 0;
         }
@@ -24,8 +22,7 @@ namespace HuffmanTree {
         /// Adds new Tree to correct place in the forrest.
         /// </summary>
         /// <param name="sappling">Tree object to be planted.</param>
-        public void PlantTree(int character, int occurance) {
-
+        public void PlantTree(int character, ulong occurance) {
             Tree sappling = new Tree(++this.Time, character, occurance);
             this.Trees.Add(sappling);
         }
@@ -34,27 +31,22 @@ namespace HuffmanTree {
         /// Takes in array describing occurances and converts it to forest.
         /// </summary>
         /// <param name="characterOcurrances">Array of character occurances in INPUT file.</param>
-        public void PlantForest(int[] characterOcurrances) {
-
+        public void PlantForest(ulong[] characterOcurrances) {
             for (int i = 0; i < characterOcurrances.Length; i++) {
-
                 if (characterOcurrances[ i ] > 0) {
-
                     PlantTree(i, characterOcurrances[ i ]);
                 }
             }
         }
+
         /// <summary>
         /// Get Tree with lowest value from the forest.
         /// Remove it from the forest afterwards.
         /// </summary>
         /// <returns>Tree object.</returns>
         public Tree ExtractSmallestTree() {
-
             Tree smallest = this.Trees.First<Tree>();
-
             this.Trees.Remove(smallest);
-
             return smallest;
         }
 
@@ -63,14 +55,10 @@ namespace HuffmanTree {
         /// </summary>
         /// <returns>Huffmans tree of text contained in INPUT file.</returns>
         public void GrowHuffmansTree() {
-
             while (this.Trees.Count > 1) {
-
                 Tree firstTree = ExtractSmallestTree();
                 Tree secondTree = ExtractSmallestTree();
-
                 Tree mergedTree = new Tree(++this.Time, firstTree, secondTree);
-
                 this.Trees.Add(mergedTree);
             }
         }
@@ -79,7 +67,6 @@ namespace HuffmanTree {
         /// Disposes of this objects properties.
         /// </summary>
         public void Dispose() {
-
             this.Trees = null;
         }
     }

@@ -6,9 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace HuffmanTree {
-
     public class ArgumentCheck {
-
         private const string ArgumentError = "Argument Error";
         private const string FileError = "File Error";
 
@@ -18,16 +16,11 @@ namespace HuffmanTree {
         /// <param name="args">Array of Program arguments.</param>
         /// <returns>True if there is precisely one argument, false otherwise.</returns>
         public static bool IsOneArgument( string[] args , out string error) {
-
             error = default(string);
-
             if (args.Length != 1) {
-
                 error = ArgumentError;
-
                 return false;
             }
-
             return true;
         }
 
@@ -37,25 +30,17 @@ namespace HuffmanTree {
         /// <param name="path"></param>
         /// <returns>True on succes, false if any exception is encountered.</returns>
         public static bool IsFileReadable( string path, out string error ) {
-
             FileStream testStream;
-
             error = default(string);
-
             try {
-
                 testStream = File.OpenRead(path);
             }
             catch (Exception) {
-
                 error = FileError;
-
                 return false;
             }
-
             testStream.Close();
             testStream.Dispose();
-
             return true;
         }
     }

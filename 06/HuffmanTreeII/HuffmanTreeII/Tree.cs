@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HuffmanTree {
+namespace HuffmanTreeII {
     public class Tree {
-        public string Value { get; private set; }
+        public byte Value { get; private set; }
         public int TimeOfCreation { get; private set; }
         public ulong Weight { get; private set; }
         public TreeType Type { get; private set; }
@@ -20,7 +20,7 @@ namespace HuffmanTree {
         /// <param name="weight">Number of occurances of character.</param>
         public Tree( int originTime, int character, ulong weight ) {
             this.TimeOfCreation = originTime;
-            this.Value = convertLeafValueToString(character, weight);
+            this.Value = (byte)character;
             this.Weight = weight;
         }
 
@@ -33,7 +33,6 @@ namespace HuffmanTree {
         /// <param name="right"></param>
         public Tree( int originTime, Tree left, Tree right) {
             this.Type = TreeType.Knot;
-            this.Value = convertRootValueToString(left.Weight, right.Weight);
             this.Weight = left.Weight + right.Weight;
             this.TimeOfCreation = originTime;
             this.LeftSon = left;
@@ -67,7 +66,7 @@ namespace HuffmanTree {
         /// <param name="character">Number of character.</param>
         /// <param name="occurances">Number of occurances of character in INPUT file.</param>
         /// <returns>String in format required for leaf.</returns>
-        public string convertLeafValueToString(int character, ulong occurances) {
+        public string convertLeafValueToString(byte character, ulong occurances) {
             return "*" + character.ToString() + ":" + occurances.ToString();
         }
 
@@ -79,6 +78,25 @@ namespace HuffmanTree {
         /// <returns>String in format required for root.</returns>
         public string convertRootValueToString(ulong firstWeight, ulong secondWeight) {
             return ( firstWeight + secondWeight ).ToString();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="vertex"></param>
+        /// <returns></returns>
+        public ulong ConvertVertexTo64Bits() {
+            ulong type = 0;
+            ulong weigth = Weight;
+            ulong value = Value;
+
+            weigth &= 0x7f_ff_ff_ff_ff_ff_ff;
+            weigth <<= 1;
+            value <<= 56;
+            if (Type == TreeType.Leaf) {
+                type = 1;
+            }
+            return (type | weigth | value);
         }
     }
 }

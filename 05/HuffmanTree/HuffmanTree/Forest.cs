@@ -60,6 +60,7 @@ namespace HuffmanTree {
                 Tree secondTree = ExtractSmallestTree();
                 Tree mergedTree = new Tree(++this.Time, firstTree, secondTree);
                 this.Trees.Add(mergedTree);
+                Console.WriteLine("{0} containing {2} and {3} created at {1}",mergedTree.Weight,mergedTree.TimeOfCreation, mergedTree.LeftSon.Value, mergedTree.RightSon.Value);
             }
         }
 

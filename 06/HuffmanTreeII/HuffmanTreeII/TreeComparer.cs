@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HuffmanTree {
+namespace HuffmanTreeII {
     public class TreeComparer : IComparer<Tree> {
         /// <summary>
         /// Defines default way to compare two Trees.

@@ -5,16 +5,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HuffmanTree {
+namespace HuffmanTreeII {
     public class Reader {
-        BinaryReader binaryReader;
+        BinaryReader BinaryReader;
 
         /// <summary>
         /// Creates an instance of Reader. Takes in FileStream of the file it is supposed to read.
         /// </summary>
         /// <param name="file">FileStream of the file to be read.</param>
         public Reader( FileStream file ) {
-            this.binaryReader = new BinaryReader(file);
+            this.BinaryReader = new BinaryReader(file);
         }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace HuffmanTree {
         public bool ReadByte( out byte nextByte) {
             nextByte = default(byte);
             try {
-                nextByte = this.binaryReader.ReadByte();
+                nextByte = this.BinaryReader.ReadByte();
             }
             catch (Exception exe) {
                 if (exe is System.IO.EndOfStreamException) {
@@ -38,12 +38,16 @@ namespace HuffmanTree {
             return true;
         }
 
+        public byte[] ReadBuffer( int bufferSize ) {
+            return BinaryReader.ReadBytes(bufferSize);
+        }
+
         /// <summary>
         /// Closes and disposes of this.binaryReader.
         /// </summary>
         public void Dispose() {
-            this.binaryReader.Close();
-            this.binaryReader.Dispose();
+            BinaryReader.Close();
+            BinaryReader.Dispose();
         }
     }
 }

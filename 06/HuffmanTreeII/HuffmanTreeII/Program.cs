@@ -5,20 +5,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HuffmanTree {
+namespace HuffmanTreeII {
     public class Program {
         /// <summary>
         /// Method that is called on start of the program.
         /// </summary>
         /// <param name="args"></param>
         static void Main( string[] args ) {
+            string inputPath = default(string);
+            string outputPath = default(string);
             SupremeCommander Thor;
+
             if (!CheckArguments(args)) {
                 return;
             }
-            Thor = new SupremeCommander(GetFileStream(args[ 0 ]));
+            inputPath = args[ 0 ];
+            outputPath = inputPath + ".huff";
+            Thor = SupremeCommander.GetSupremeCommander(inputPath, outputPath);
+            if (Thor == null) {
+                Console.WriteLine("File Error");
+                return;
+            }
             Thor.CreateHuffmanTree();
-            Thor.PrintHuffmanTree();
+            Thor.PrintCodedHuffmanTreeToFile();
+            Thor.PrintCodedFileToFile();
             Thor.Dispose();
         }
 
@@ -27,27 +37,28 @@ namespace HuffmanTree {
         /// </summary>
         /// <param name="args">Array of arguments.</param>
         /// <returns>True if the arguments are as expected, false otherwise.</returns>
-        public static bool CheckArguments(string[] args) {
+        public static bool CheckArguments( string[] args ) {
             string error = default(string);
+            string inputFile = default(string);
+            string outputFile = default(string);
+
             if (!ArgumentCheck.IsOneArgument(args, out error)) {
                 Writer.WriteToConsole(error);
                 return false;
             }
-            if (!ArgumentCheck.IsFileReadable(args[ 0 ], out error)) {
+            /*
+            inputFile = args[ 0 ];
+            if (!ArgumentCheck.IsFileReadable(inputFile, out error)) {
                 Writer.WriteToConsole(error);
                 return false;
             }
+            outputFile = inputFile + ".huff";
+            if (!ArgumentCheck.IsFileWritable(outputFile, out error)) {
+                Writer.WriteToConsole(error);
+                return false;
+            }
+            */
             return true;
-        }
-
-        /// <summary>
-        /// Takes in string containing path to the file and opens file stream.
-        /// </summary>
-        /// <param name="file">Path to the file.</param>
-        /// <returns>FileStream to the file.</returns>
-        public static FileStream GetFileStream(string file) {
-            FileStream fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
-            return fileStream;
         }
     }
 }

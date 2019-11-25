@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HuffmanTree {
+namespace HuffmanTreeII {
 
     class Forest {
         public SortedSet<Tree> Trees { get; private set; }
@@ -48,6 +48,14 @@ namespace HuffmanTree {
             Tree smallest = this.Trees.First<Tree>();
             this.Trees.Remove(smallest);
             return smallest;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public Tree ExtractCopyOfSmallestTree() {
+            return this.Trees.First<Tree>();
         }
 
         /// <summary>

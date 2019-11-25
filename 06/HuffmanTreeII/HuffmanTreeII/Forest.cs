@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HuffmanTree {
+namespace HuffmanTreeII {
 
     class Forest {
         public SortedSet<Tree> Trees { get; private set; }
@@ -51,6 +51,14 @@ namespace HuffmanTree {
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public Tree ExtractCopyOfSmallestTree() {
+            return this.Trees.First<Tree>();
+        }
+
+        /// <summary>
         /// Connect trees to eachother until only one super tree remains.
         /// </summary>
         /// <returns>Huffmans tree of text contained in INPUT file.</returns>
@@ -60,7 +68,6 @@ namespace HuffmanTree {
                 Tree secondTree = ExtractSmallestTree();
                 Tree mergedTree = new Tree(++this.Time, firstTree, secondTree);
                 this.Trees.Add(mergedTree);
-                Console.WriteLine("{0} containing {2} and {3} created at {1}",mergedTree.Weight,mergedTree.TimeOfCreation, mergedTree.LeftSon.Value, mergedTree.RightSon.Value);
             }
         }
 

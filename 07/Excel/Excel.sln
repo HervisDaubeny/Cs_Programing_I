@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29509.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Excel", "Excel\Excel.csproj", "{D3AD1A0C-A8BA-4603-AB9D-18737D265CC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Excell", "Excell\Excell.csproj", "{E4FA4841-26A2-4C4C-9E5F-DD9EF7A904B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Excell.Tests", "Excell.Tests\Excell.Tests.csproj", "{2B68EDEE-9551-4390-8C07-96AAD2EB0150}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D3AD1A0C-A8BA-4603-AB9D-18737D265CC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3AD1A0C-A8BA-4603-AB9D-18737D265CC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3AD1A0C-A8BA-4603-AB9D-18737D265CC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3AD1A0C-A8BA-4603-AB9D-18737D265CC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4FA4841-26A2-4C4C-9E5F-DD9EF7A904B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4FA4841-26A2-4C4C-9E5F-DD9EF7A904B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4FA4841-26A2-4C4C-9E5F-DD9EF7A904B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4FA4841-26A2-4C4C-9E5F-DD9EF7A904B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B68EDEE-9551-4390-8C07-96AAD2EB0150}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B68EDEE-9551-4390-8C07-96AAD2EB0150}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B68EDEE-9551-4390-8C07-96AAD2EB0150}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B68EDEE-9551-4390-8C07-96AAD2EB0150}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {96ED0190-0BF8-4881-B6EE-D38895028F1A}
+	EndGlobalSection
+EndGlobal

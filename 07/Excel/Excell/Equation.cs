@@ -13,9 +13,17 @@ namespace Hervis.Excell {
         public Coords SecondOperand;
         public Operation Operation;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="EquationData"></param>
+        /// <param name="Equation"></param>
+        /// <param name="Error"></param>
+        /// <returns></returns>
         public static bool TryParse(string EquationData, out Equation Equation, out CellType Error) {
             Equation = default(Equation);
             Error = default(CellType);
+            const int alphabetLength = 26;
 
             char[] Operators = { '=', '+', '-', '*', '/' };
 
@@ -44,15 +52,14 @@ namespace Hervis.Excell {
             for (int i = 1; i < 3; i++) {
                 int rowCoord = -1;
                 int columnCoord = 0;
-                //TODO: use 26 as base of folowing counting
                 for (int j = 0; j < splitedData[i].Length; j++) {
-                    if (splitedData[i][j] > 64 && splitedData[i][j] < 93) {
-                        columnCoord *= 27;
+                    if (splitedData[i][j] >= (int)'A' && splitedData[i][j] <= (int)'Z') {
+                        columnCoord *= alphabetLength;
                         columnCoord += (int) splitedData[ i ][ j ] - 64;
                     }
-                    else if (splitedData[i][j] > 47 && splitedData[i][j] < 58) {
+                    else if (splitedData[i][j] > (int)'0' && splitedData[i][j] < (int)'9') {
                         if (int.TryParse(splitedData[ i ].Substring(j), out rowCoord)) {
-                            Operand[ i - 1 ] = new Coords(rowCoord, columnCoord);
+                            Operand[ i - 1 ] = new Coords(rowCoord - 1, columnCoord - 1);
                             break;
                         }
                         else {
@@ -77,6 +84,9 @@ namespace Hervis.Excell {
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     internal struct Coords {
         public readonly int rowCoord;
         public readonly int columnCoord;
@@ -85,11 +95,31 @@ namespace Hervis.Excell {
             this.rowCoord = rowCoord;
             this.columnCoord = columnCoord;
         }
+
+        public static bool operator == (Coords firstCoords, Coords secondCoords ) {
+            if (firstCoords.columnCoord == secondCoords.columnCoord &&
+                firstCoords.rowCoord == secondCoords.rowCoord) {
+                return true;
+            }
+            return false;
+        }
+
+        public static bool operator != (Coords firstCoords, Coords secondCoords ) {
+            if (firstCoords.columnCoord != secondCoords.columnCoord ||
+                firstCoords.rowCoord != secondCoords.rowCoord) {
+                return true;
+            }
+            return false;
+        }
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
     internal enum Operation : Byte {
-        addition = 0x2F,
-        subtraction = 0x2D,
         multiplication = 0x2A,
+        addition = 0x2B,
+        subtraction = 0x2D,
         division = 0x2F
     }
 }

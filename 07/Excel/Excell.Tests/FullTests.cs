@@ -1,15 +1,35 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Hervis.Excell;
+using System.IO;
+
+namespace Excell.Tests {
+    [TestClass]
+    public class FullTests {
+        [TestMethod]
+        public void EmptyFile() {
+            
+        }
+
+        [TestMethod]
+        public void ReguarFile() {
+
+        }
+
+        [TestMethod]
+        public void BigFile() {
+            Call(new string[] { 
+                $@"{Environment.CurrentDirectory}\Files\BigIn.in",
+                $@"{Environment.CurrentDirectory}\Files\File.out"
+            });
+        }
 
 
-namespace Excel {
-    public class Program {
-        static void Main( string[] args ) {
+        private void Call(string[] args) {
             TextReader reader = default(TextReader);
             TextWriter writer = default(TextWriter);
             SupremeCommander Thor = default(SupremeCommander);
@@ -19,8 +39,8 @@ namespace Excel {
                 return;
             }
             try {
-                reader = File.OpenText(args[0]);
-                writer = File.CreateText(args[1]);
+                reader = File.OpenText(args[ 0 ]);
+                writer = File.CreateText(args[ 1 ]);
             }
             catch (Exception) {
                 Console.WriteLine("File Error");

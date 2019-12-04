@@ -41,7 +41,8 @@ namespace Excell.Tests {
                 return false;
             }
             for (int i = 0; i < firstArray.Length; i++) {
-                if (firstArray[i].rowCoord != secondArray[i].rowCoord || firstArray[i].columnCoord != secondArray[i].columnCoord) {
+                if (firstArray[i].rowCoord != secondArray[i].rowCoord ||
+                    firstArray[i].columnCoord != secondArray[i].columnCoord) {
                     return false;
                 }
             }

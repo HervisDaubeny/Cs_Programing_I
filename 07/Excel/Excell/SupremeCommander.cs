@@ -14,9 +14,11 @@ namespace Hervis.Excell {
         /// <summary>
         /// 
         /// </summary>
-        private SupremeCommander() {
+        private SupremeCommander(TextWriter Writer) {
             Equations = new Dictionary<Coords, Equation>();
             Data = new CellTable();
+            this.Writer = Writer;
+
         }
 
         /// <summary>
@@ -26,8 +28,7 @@ namespace Hervis.Excell {
         /// <returns></returns>
         public static SupremeCommander Initialize(TextReader Reader, TextWriter Writer) 
         {
-            SupremeCommander thor = new SupremeCommander();
-            thor.Writer = Writer;
+            SupremeCommander thor = new SupremeCommander(Writer);
 
             string line = default(string);
             int numberOfRows = 0;
@@ -56,7 +57,7 @@ namespace Hervis.Excell {
                 numberOfRows++;
             }
             return thor;
-        }    
+        }
 
         /// <summary>
         /// 
@@ -64,6 +65,7 @@ namespace Hervis.Excell {
         public void SolveEquations() { 
             while(this.Equations.Count > 0) {
                 KeyValuePair<Coords, Equation> actual = this.Equations.First();
+                //Console.WriteLine("Equation. row:{0} column:{1}", actual.Key.rowCoord, actual.Key.columnCoord);
                 SolveEquation(actual);
             }
         }
@@ -85,7 +87,6 @@ namespace Hervis.Excell {
             //HashSet<Lock> locks = new HashSet<Lock>();
             
             solveStack.Push(Equation);
-            Equation.Value.SaveStackInfo(solveStack.Count);
 
             while(solveStack.Count > 0) {
                 KeyValuePair<Coords, Equation> peek = solveStack.Peek();
@@ -103,8 +104,9 @@ namespace Hervis.Excell {
                     secondOperand = this.Data[ currentEquation.SecondOperand ];
                 }
                 //TODO: add stack size to locks PROB. cant use dictionary because of uniqe values requirement
-                if (locks.Contains(currentKey) && solveStack.Count != currentEquation.StackInfo) {
+                if (locks.Contains(currentKey)) {
                     RemoveCycle(solveStack, locks, currentKey);
+                    RemoveError(solveStack, locks);
                     continue;
                 }
                 locks.Add(currentKey);
@@ -118,7 +120,6 @@ namespace Hervis.Excell {
                 if (firstOperand.IsEquation) {
                     Coords operandCoords = currentEquation.FirstOperand;
                     Equation operandEquation = this.Equations[ operandCoords ];
-                    operandEquation.SaveStackInfo(solveStack.Count);
 
                     solveStack.Push(new KeyValuePair<Coords, Equation>(operandCoords, operandEquation));
                     continue;
@@ -126,7 +127,6 @@ namespace Hervis.Excell {
                 if (secondOperand.IsEquation) {
                     Coords operandCoords = currentEquation.SecondOperand;
                     Equation operandEquation = this.Equations[ operandCoords ];
-                    operandEquation.SaveStackInfo(solveStack.Count);
                     
                     solveStack.Push(new KeyValuePair<Coords, Equation>(operandCoords, operandEquation));
                     continue;
@@ -136,6 +136,9 @@ namespace Hervis.Excell {
                 this.Equations.Remove(currentKey);
                 solveStack.Pop();
                 locks.Remove(currentKey);
+                if (locks.Count > 0) {
+                    locks.Remove(solveStack.Peek().Key);
+                }
             }
         }
 
@@ -184,7 +187,6 @@ namespace Hervis.Excell {
                 }
 
                 Writer.WriteLine(line.ToString());
-                Writer.Flush();
             }
         }
 
@@ -224,21 +226,33 @@ namespace Hervis.Excell {
         /// <param name="Locks"></param>
         /// <param name="Key"></param>
         private void RemoveCycle( Stack<KeyValuePair<Coords, Equation>> SolveStack, HashSet<Coords> Locks, Coords Key ) {
-            Coords currentKey = default(Coords);
-            SolveStack.Pop(); //Avoids marking first item as cycle twice.
+            Coords currentKey = SolveStack.Pop().Key;
+            this.Data[ currentKey ] = new Cell(CellType.Cycle);
 
             bool inCycle = true;
-            //bool firstIteration = true;
-            do {
+            while (inCycle) {
                 currentKey = SolveStack.Pop().Key;
-                if (currentKey == Key) {// && !firstIteration) {
+                if (this.Data[ currentKey ].IsCycle) {
                     inCycle = false;
                 }
-                this.Data[ currentKey ] = new Cell(CellType.Cycle);
+                else {
+                    this.Data[ currentKey ] = new Cell(CellType.Cycle);
+                }
+
                 this.Equations.Remove(currentKey);
                 Locks.Remove(currentKey);
-                //firstIteration = false;
-            } while (inCycle);
+            }
+        }
+
+        private void RemoveError( Stack<KeyValuePair<Coords,Equation>> SolveStack, HashSet<Coords> Locks ) {
+            Coords currentKey = default(Coords);
+
+            while (SolveStack.Count > 0) {
+                currentKey = SolveStack.Pop().Key;
+                this.Data[ currentKey ] = new Cell(CellType.Error);
+                this.Equations.Remove(currentKey);
+                Locks.Remove(currentKey);
+            }
         }
 
         /// <summary>
@@ -247,7 +261,9 @@ namespace Hervis.Excell {
         public void Dispose() {
             this.Data = null;
             this.Equations = null;
-            this.Writer = null;
+            this.Writer.Flush();
+            this.Writer.Close();
+            this.Writer.Dispose();
         }
     }
 

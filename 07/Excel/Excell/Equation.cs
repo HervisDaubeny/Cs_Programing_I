@@ -57,7 +57,7 @@ namespace Hervis.Excell {
                         columnCoord *= alphabetLength;
                         columnCoord += (int) splitedData[ i ][ j ] - 64;
                     }
-                    else if (splitedData[i][j] > (int)'0' && splitedData[i][j] < (int)'9') {
+                    else if (splitedData[i][j] >= (int)'0' && splitedData[i][j] <= (int)'9') {
                         if (int.TryParse(splitedData[ i ].Substring(j), out rowCoord)) {
                             Operand[ i - 1 ] = new Coords(rowCoord - 1, columnCoord - 1);
                             break;

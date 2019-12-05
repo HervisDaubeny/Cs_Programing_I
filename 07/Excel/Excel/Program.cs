@@ -20,7 +20,7 @@ namespace Excel {
             }
             try {
                 reader = File.OpenText(args[0]);
-                writer = File.CreateText(args[1]);
+                writer = File.CreateText(args[ 1 ]);
             }
             catch (Exception) {
                 Console.WriteLine("File Error");

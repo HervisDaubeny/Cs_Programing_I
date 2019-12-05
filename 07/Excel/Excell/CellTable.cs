@@ -43,11 +43,12 @@ namespace Hervis.Excell {
         /// <returns></returns>
         public bool AreCoordsValid(Coords check) {
             int noRows = RowCount();
-            int noCols = ColumnCount(check.rowCoord);
 
             if (check.rowCoord >= noRows) {
                 return false;
             }
+            int noCols = ColumnCount(check.rowCoord);
+
             if (check.columnCoord >= noCols) {
                 return false;
             }

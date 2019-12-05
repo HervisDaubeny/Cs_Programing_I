@@ -40,6 +40,13 @@ namespace Hervis.Excell {
         /// <summary>
         /// 
         /// </summary>
+        public bool IsCycle {
+            get { return this.Type == CellType.Cycle; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="Type"></param>
         public Cell(CellType Type ) {
             this._Value = 0;

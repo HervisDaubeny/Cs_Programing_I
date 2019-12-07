@@ -113,10 +113,10 @@ namespace Excell.Tests {
             Coords[] correctCoords = new Coords[ 4 ];
             Coords[] myCoords = new Coords[ 4 ];
 
-            correctCoords[ 0 ] = new Coords(10, 1);
-            correctCoords[ 1 ] = new Coords(4, 23);
-            correctCoords[ 2 ] = new Coords(1769874983, 731);
-            correctCoords[ 3 ] = new Coords(1256376569, 12356615);
+            correctCoords[ 0 ] = new Coords(9, 0);
+            correctCoords[ 1 ] = new Coords(3, 22);
+            correctCoords[ 2 ] = new Coords(1769874982, 730);
+            correctCoords[ 3 ] = new Coords(1256376568, 12356614);
 
             Equation.TryParse(ShortAddress, out myEquation, out myAnswer);
             myCoords[ 0 ] = myEquation.FirstOperand;

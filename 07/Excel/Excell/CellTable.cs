@@ -14,33 +14,33 @@ namespace Hervis.Excell {
             Table = new List<Cell[]>();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="coords"></param>
-        /// <returns></returns>
         public Cell this[Coords coords] { 
             get => Table[ coords.rowCoord ][ coords.columnCoord ];
             set => Table[ coords.rowCoord ][ coords.columnCoord ] = value;
         }
 
         /// <summary>
-        /// 
+        /// Count rows.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Int: Number of rows.</returns>
         public int RowCount() {
             return Table.Count;
         }
 
+        /// <summary>
+        /// Counts columns of a row.
+        /// </summary>
+        /// <param name="line">Int: Row to use.</param>
+        /// <returns>Int: Number of columns in row.</returns>
         public int ColumnCount(int line) {
             return Table[ line ].Length;
         }
 
         /// <summary>
-        /// 
+        /// Checks if given coords are in range of table.
         /// </summary>
-        /// <param name="check"></param>
-        /// <returns></returns>
+        /// <param name="check">Coords: Coordinates to check.</param>
+        /// <returns>True if coordinates are in range of table, false otherwise.</returns>
         public bool AreCoordsValid(Coords check) {
             int noRows = RowCount();
 
@@ -57,9 +57,9 @@ namespace Hervis.Excell {
         }
 
         /// <summary>
-        /// 
+        /// Adds new row to table.
         /// </summary>
-        /// <param name="Row"></param>
+        /// <param name="Row">Cell[]: Row to be added to table.</param>
         public void AddRow(Cell[] Row) {
             Table.Add(Row);
         }

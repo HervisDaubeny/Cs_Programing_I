@@ -24,50 +24,50 @@ namespace Hervis.Excell {
         }
 
         /// <summary>
-        /// 
+        /// Returns true if Cell contains any errorType, false otherwise.
         /// </summary>
         public bool IsError {
             get { return (((int) this._Type) >= 128); }
         }
 
         /// <summary>
-        /// 
+        /// Returns true if Cell contains equation, false otherwise.
         /// </summary>
         public bool IsEquation {
             get { return this.Type == CellType.Equation; }
         }
 
         /// <summary>
-        /// 
+        /// Returns true if Cell contains equation that is part of a cycle, false otherwise.
         /// </summary>
         public bool IsCycle {
             get { return this.Type == CellType.Cycle; }
         }
 
         /// <summary>
-        /// 
+        /// Constructor: creates new cell containing any error or equation.
         /// </summary>
-        /// <param name="Type"></param>
+        /// <param name="Type">CellType: type to be set as cells Type. (equation or any error)</param>
         public Cell(CellType Type ) {
             this._Value = 0;
             this._Type = Type;
         }
 
         /// <summary>
-        /// 
+        /// Constructor: creates new cell containing number.
         /// </summary>
-        /// <param name="Value"></param>
+        /// <param name="Value">Int: number to be set as cells Value.</param>
         public Cell( int Value ) {
             this._Value = Value;
             this._Type = CellType.Number;
         }
 
         /// <summary>
-        /// 
+        /// Tries to parse data inside Cell.
         /// </summary>
-        /// <param name="CellData"></param>
-        /// <param name="Cell"></param>
-        /// <returns></returns>
+        /// <param name="CellData">String: Data to work with.</param>
+        /// <param name="Cell">Cell: created depending on data given.</param>
+        /// <returns>New Cell.</returns>
         public static bool TryParse( string CellData, out Cell Cell ) {
 
             Cell = default(Cell);
@@ -86,9 +86,6 @@ namespace Hervis.Excell {
         }
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
     internal enum CellType : Byte {
         Empty,
         Number,

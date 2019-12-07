@@ -14,12 +14,12 @@ namespace Hervis.Excell {
         public Operation Operation;
 
         /// <summary>
-        /// 
+        /// Tries to parse data given to valid equation.
         /// </summary>
-        /// <param name="EquationData"></param>
-        /// <param name="Equation"></param>
-        /// <param name="Error"></param>
-        /// <returns></returns>
+        /// <param name="EquationData">String: Data to work with.</param>
+        /// <param name="Equation">Equation: Contains valid Equation or null.</param>
+        /// <param name="Error">CellType: Contains Equation or errorType found during parsing.</param>
+        /// <returns>On succes valid new Equation and corrsponding CellType. Empty Equation and corresponding error as CellType.</returns>
         public static bool TryParse(string EquationData, out Equation Equation, out CellType Error) {
             Equation = default(Equation);
             Error = default(CellType);
@@ -85,7 +85,7 @@ namespace Hervis.Excell {
     }
 
     /// <summary>
-    /// 
+    /// Structure representing coordinates to cells in CellTable.
     /// </summary>
     internal struct Coords {
         public readonly int rowCoord;
@@ -113,9 +113,6 @@ namespace Hervis.Excell {
         }
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
     internal enum Operation : Byte {
         multiplication = 0x2A,
         addition = 0x2B,

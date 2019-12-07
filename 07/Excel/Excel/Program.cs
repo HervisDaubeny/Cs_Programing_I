@@ -28,8 +28,7 @@ namespace Excel {
             }
 
             Thor = SupremeCommander.Initialize(reader, writer);
-            Thor.SolveEquations();
-            Thor.WriteFile();
+            Thor.WriteAndSolve();
             Thor.Dispose();
         }
     }

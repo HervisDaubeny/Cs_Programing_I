@@ -12,7 +12,7 @@ namespace Hervis.Excell {
         TextWriter Writer;
 
         /// <summary>
-        /// 
+        /// Creates new SupremeComander object.
         /// </summary>
         private SupremeCommander(TextWriter Writer) {
             Equations = new Dictionary<Coords, Equation>();
@@ -22,10 +22,10 @@ namespace Hervis.Excell {
         }
 
         /// <summary>
-        /// 
+        /// Creates new SupremeComander and reades input file to commander's database.
         /// </summary>
-        /// <param name="Reader"></param>
-        /// <returns></returns>
+        /// <param name="Reader">TextReader object, pointing to input file.</param>
+        /// <returns>New SupremeCommander object.</returns>
         public static SupremeCommander Initialize(TextReader Reader, TextWriter Writer) 
         {
             SupremeCommander thor = new SupremeCommander(Writer);
@@ -60,31 +60,77 @@ namespace Hervis.Excell {
         }
 
         /// <summary>
-        /// 
+        /// Write data to output file. If equation is encountered, it is solved and then written.
         /// </summary>
-        public void SolveEquations() { 
-            while(this.Equations.Count > 0) {
-                KeyValuePair<Coords, Equation> actual = this.Equations.First();
-                //Console.WriteLine("Equation. row:{0} column:{1}", actual.Key.rowCoord, actual.Key.columnCoord);
-                SolveEquation(actual);
+        public void WriteAndSolve() {
+            const string empty = "[]";
+            const string invalid = "#INVVAL";
+            const string error = "#ERROR";
+            const string zeroDivision = "#DIV0";
+            const string cycle = "#CYCLE";
+            const string missingOp = "#MISSOP";
+            const string formula = "#FORMULA";
+            const string space = " ";
+
+            int rowCount = this.Data.RowCount();
+            for (int row = 0; row < rowCount; row++) {
+                StringBuilder line = new StringBuilder();
+
+                int columnCount = this.Data.ColumnCount(row);
+                for (int column = 0; column < columnCount; column++) {
+                    Coords currentCoords = new Coords(row, column);
+                    Cell currentCell = this.Data[currentCoords];
+                    if (currentCell.IsEquation) {
+                        KeyValuePair<Coords, Equation> currentEquation 
+                            = new KeyValuePair<Coords,Equation>(currentCoords, this.Equations[currentCoords]);
+                        SolveEquation(currentEquation);
+                        currentCell = this.Data[currentCoords];
+                    }
+
+                    if (column > 0) {
+                        line.Append(space);
+                    }
+                    switch (currentCell.Type) {
+                        case CellType.Empty:
+                            line.Append(empty);
+                            break;
+                        case CellType.Number:
+                            line.Append(currentCell.Value);
+                            break;
+                        case CellType.Invalid:
+                            line.Append(invalid);
+                            break;
+                        case CellType.Error:
+                            line.Append(error);
+                            break;
+                        case CellType.ZeroDivision:
+                            line.Append(zeroDivision);
+                            break;
+                        case CellType.Cycle:
+                            line.Append(cycle);
+                            break;
+                        case CellType.MissingOperation:
+                            line.Append(missingOp);
+                            break;
+                        case CellType.Formula:
+                            line.Append(formula);
+                            break;
+                        default:
+                            throw new Exception("You tried to print an equation typed cell!");
+                    }
+                }
+
+                Writer.WriteLine(line.ToString());
             }
         }
 
         /// <summary>
-        /// 
+        /// Solves given equation and saves correct value and type to cell, holding named equation.
         /// </summary>
-        public void WriteFile() {
-            WriteDataToFile();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="Equation"></param>
+        /// <param name="Equation">KeyValuePair[Coords, Equation] containing coordinates to cell and equation itself.</param>
         private void SolveEquation( KeyValuePair<Coords, Equation> Equation ) {
             Stack<KeyValuePair<Coords, Equation>> solveStack = new Stack<KeyValuePair<Coords, Equation>>();
             HashSet<Coords> locks = new HashSet<Coords>();
-            //HashSet<Lock> locks = new HashSet<Lock>();
             
             solveStack.Push(Equation);
 
@@ -103,7 +149,6 @@ namespace Hervis.Excell {
                 if (this.Data.AreCoordsValid(secondOperandCoords)) {
                     secondOperand = this.Data[ currentEquation.SecondOperand ];
                 }
-                //TODO: add stack size to locks PROB. cant use dictionary because of uniqe values requirement
                 if (locks.Contains(currentKey)) {
                     RemoveCycle(solveStack, locks, currentKey);
                     RemoveError(solveStack, locks);
@@ -113,7 +158,6 @@ namespace Hervis.Excell {
 
                 if (firstOperand.IsError || secondOperand.IsError) {
                     this.Data[ currentKey ] = new Cell(CellType.Error);
-                    this.Equations.Remove(currentKey);
                     locks.Remove(currentKey);
                     return;
                 }
@@ -133,7 +177,6 @@ namespace Hervis.Excell {
                 }
 
                 this.Data[ currentKey ] = TryCompute(firstOperand.Value, secondOperand.Value, currentEquation.Operation);
-                this.Equations.Remove(currentKey);
                 solveStack.Pop();
                 locks.Remove(currentKey);
                 if (locks.Count > 0) {
@@ -143,60 +186,12 @@ namespace Hervis.Excell {
         }
 
         /// <summary>
-        /// 
+        /// Computes equation if all data are correct. Otherwise sets CellType to corresponding error type.
         /// </summary>
-        private void WriteDataToFile() {
-            for (int row = 0; row < Data.RowCount(); row++) {
-                StringBuilder line = new StringBuilder();
-
-                for (int column = 0; column < Data.ColumnCount(row); column++) {
-                    Coords coodrsCellToWrite = new Coords(row, column);
-                    Cell cellToWrite = Data[ coodrsCellToWrite ];
-
-                    if (column > 0) {
-                        line.Append(" ");
-                    }
-                    switch (cellToWrite.Type) {
-                        case CellType.Empty:
-                            line.Append("[]");
-                            break;
-                        case CellType.Number:
-                            line.Append(cellToWrite.Value);
-                            break;
-                        case CellType.Invalid:
-                            line.Append("#INVVAL");
-                            break;
-                        case CellType.Error:
-                            line.Append("#ERROR");
-                            break;
-                        case CellType.ZeroDivision:
-                            line.Append("#DIV0");
-                            break;
-                        case CellType.Cycle:
-                            line.Append("#CYCLE");
-                            break;
-                        case CellType.MissingOperation:
-                            line.Append("#MISSOP");
-                            break;
-                        case CellType.Formula:
-                            line.Append("#FORMULA");
-                            break;
-                        default:
-                            throw new Exception("You tried to print an equation type of cell!");
-                    }
-                }
-
-                Writer.WriteLine(line.ToString());
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="firstOperand"></param>
-        /// <param name="secondOperand"></param>
-        /// <param name="operation"></param>
-        /// <returns></returns>
+        /// <param name="firstOperand">Coords pointing to first equation operand.</param>
+        /// <param name="secondOperand">Coords pointing to second equation operand.</param>
+        /// <param name="operation">Operation to be done upon operands.</param>
+        /// <returns>Cell with correct type and value.</returns>
         private Cell TryCompute(int firstOperand, int secondOperand, Operation operation) {
             switch (operation) {
                 case Operation.addition:
@@ -220,11 +215,11 @@ namespace Hervis.Excell {
         }
 
         /// <summary>
-        /// 
+        /// Removes cycle from stack, when solving nested equations.
         /// </summary>
-        /// <param name="SolveStack"></param>
-        /// <param name="Locks"></param>
-        /// <param name="Key"></param>
+        /// <param name="SolveStack">SolveStack with equations.</param>
+        /// <param name="Locks">HashSet with currently computed equations.</param>
+        /// <param name="Key">Coords of equation nested deepest, marking end the cycle.</param>
         private void RemoveCycle( Stack<KeyValuePair<Coords, Equation>> SolveStack, HashSet<Coords> Locks, Coords Key ) {
             Coords currentKey = SolveStack.Pop().Key;
             this.Data[ currentKey ] = new Cell(CellType.Cycle);
@@ -239,24 +234,29 @@ namespace Hervis.Excell {
                     this.Data[ currentKey ] = new Cell(CellType.Cycle);
                 }
 
-                this.Equations.Remove(currentKey);
+                //this.Equations.Remove(currentKey);
                 Locks.Remove(currentKey);
             }
         }
 
+        /// <summary>
+        /// Removes error from stack. In other words, sets all equations from stac as error. Called after removing a cycle.
+        /// </summary>
+        /// <param name="SolveStack">SolveStack with equations.</param>
+        /// <param name="Locks">HashSet with currently computed equations.</param>
         private void RemoveError( Stack<KeyValuePair<Coords,Equation>> SolveStack, HashSet<Coords> Locks ) {
             Coords currentKey = default(Coords);
 
             while (SolveStack.Count > 0) {
                 currentKey = SolveStack.Pop().Key;
                 this.Data[ currentKey ] = new Cell(CellType.Error);
-                this.Equations.Remove(currentKey);
+                //this.Equations.Remove(currentKey);
                 Locks.Remove(currentKey);
             }
         }
 
         /// <summary>
-        /// 
+        /// Correctly closes writer and gets rid of all objects, properties.
         /// </summary>
         public void Dispose() {
             this.Data = null;
